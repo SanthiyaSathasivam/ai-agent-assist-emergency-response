@@ -1,7 +1,5 @@
 # AI Agent Assist Platform for Emergency Response Operators
 
----
-
 ## Problem Statement
 
 Emergency response operators (e.g., 911 dispatchers) must make rapid, high-stakes decisions under extreme pressure with incomplete and noisy information.
