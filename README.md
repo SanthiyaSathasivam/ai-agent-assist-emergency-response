@@ -104,12 +104,12 @@ class O,P org
 ```
 ## MVP Scope
 
-| Included                     | Not Included                  |
-|----------------------------|-------------------------------|
-| Real-time transcription     | Full automation               |
-| AI recommendations          | Personalization               |
-| Confidence scoring          | Cross-agency integration      |
-| Human-in-the-loop decisions | Predictive analytics          |
+| Included | Why | Not Included | Why |
+|---------|-----|-------------|-----|
+| Real-time transcription | Enables live understanding of calls | Full automation | High risk in critical scenarios |
+| AI recommendations | Supports faster decision-making | Personalization | Requires more data and iteration |
+| Confidence scoring | Builds trust and transparency | Cross-agency integration | Adds system complexity early |
+| Human-in-the-loop decisions | Ensures safety and control | Predictive analytics | Not required for initial value |
 
 ## Roadmap
 
