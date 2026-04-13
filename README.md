@@ -53,14 +53,54 @@ AI-Assisted Decision Rate
 ## User Workflow
 ```mermaid
 flowchart LR
-    A[Incoming Call] --> B[Speech-to-Text]
-    B --> C[Signal Extraction]
-    C --> D[AI Recommendation]
-    D --> E[Operator Review]
-    E --> F{Decision}
-    F -->|Accept| G[Dispatch Action]
-    F -->|Modify| G
-    F -->|Reject| H[Manual Decision] 
+    A[Incoming Call] --> B[Speech to Text]
+B --> C[AI Signal Detection]
+C --> D{Critical Event?}
+
+D -->|Yes| E[AI Suggestion]
+D -->|No| F[Low Priority / No Immediate Action]
+
+E --> E1[Confidence: 92% - High]
+E --> E2[Reason: breathing problem, chest pain, unconscious]
+
+F --> F1[Confidence: 28% - Low]
+F --> F2[Reason: no critical keywords, unclear urgency]
+
+E1 --> G[Operator Review]
+E2 --> G
+F1 --> G
+F2 --> G
+
+G --> H{Operator Decision}
+
+H -->|Accept| I[Dispatch Action]
+H -->|Modify| J[Modified Dispatch / Escalation]
+H -->|Reject| K[Manual Handling]
+
+H --> L[Feedback Capture]
+I --> L
+J --> L
+K --> L
+
+L --> M[Supervisor Monitoring]
+M --> N[Metrics: override rate, decision time, accuracy]
+
+N --> O[Organization Insights]
+O --> P[Policy, compliance, scaling decisions]
+
+L --> C
+
+classDef critical fill:#f4cccc,stroke:#b85450,stroke-width:2px,color:#000000
+classDef noncritical fill:#d9ead3,stroke:#6aa84f,stroke-width:2px,color:#000000
+classDef review fill:#d0e0f0,stroke:#3d85c6,stroke-width:2px,color:#000000
+classDef monitor fill:#fff2cc,stroke:#bf9000,stroke-width:2px,color:#000000
+classDef org fill:#ead1dc,stroke:#a64d79,stroke-width:2px,color:#000000
+
+class E,E1,E2 critical
+class F,F1,F2 noncritical
+class G,H,I,J,K,L review
+class M,N monitor
+class O,P org
 ```
 ## MVP Scope
 
