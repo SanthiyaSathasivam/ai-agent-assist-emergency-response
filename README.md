@@ -1,6 +1,4 @@
 # AI Agent Assist Platform for Emergency Response Operators
-**End-to-End Product Case Study**
-
 ---
 
 ## Problem Statement
