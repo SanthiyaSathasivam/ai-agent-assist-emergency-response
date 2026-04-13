@@ -32,7 +32,7 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 AI-Assisted Decision Rate  
 (% of emergency decisions supported by AI recommendations)
 
-## Key Metrics
+## Key Supporting Metrics
 
 | Metric                      | Target        |
 |---------------------------|--------------|
