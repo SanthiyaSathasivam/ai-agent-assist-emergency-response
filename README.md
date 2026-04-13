@@ -10,8 +10,6 @@ Key challenges:
 - Risk of delayed or incorrect dispatch decisions
 - Lack of decision support tools in mission-critical workflows
 
----
-
 ## Solution Overview
 
 An AI-powered **Agent Assist Platform** that supports emergency operators by:
@@ -24,19 +22,13 @@ An AI-powered **Agent Assist Platform** that supports emergency operators by:
 
 Goal: **Augment human decision-making, not replace it**
 
----
-
 ## Product Vision
 
 Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
 
----
-
 ## North Star Metric
 
 **% of emergency incidents correctly assisted by AI recommendations**
-
----
 
 ## Supporting Metrics (KPIs)
 
@@ -46,14 +38,10 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 - Override rate (trust indicator)
 - System latency (real-time constraint)
 
----
-
 ## Target Users
 
 - Emergency response operators
 - Public safety operations teams
-
----
 
 ## User Workflow
 
@@ -67,8 +55,6 @@ Enable faster, more accurate, and consistent emergency response decisions throug
    - Explanation  
 6. Operator accepts / modifies / rejects suggestion  
 7. Feedback is captured for continuous learning  
-
----
 
 ## MVP Definition
 
@@ -84,8 +70,6 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 - Advanced personalization
 - Multi-agency coordination
 - Predictive incident modeling
-
----
 
 ## Product Roadmap
 
@@ -106,8 +90,6 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 - Personalized recommendations per operator
 - Semi-automated dispatch workflows
 
----
-
 ## AI Product Design
 
 ### Model Approach
@@ -116,27 +98,19 @@ Hybrid system:
 - Rule-based logic (for reliability & explainability)
 - ML models (for pattern detection & learning)
 
----
-
 ### Key Tradeoffs
 
 #### 1. Accuracy vs Latency
 - Faster responses vs more accurate predictions  
 - Decision: prioritize low latency for real-time usability  
 
----
-
 #### 2. Automation vs Human Control
 - Full automation risks trust and safety  
 - Decision: keep human-in-the-loop  
 
----
-
 #### 3. False Positives vs False Negatives
 - Missing emergency is more critical than over-alerting  
 - Decision: bias toward higher recall  
-
----
 
 ### Evaluation Metrics
 
@@ -146,15 +120,11 @@ Hybrid system:
 - Confidence calibration
 - Human override rate
 
----
-
 ## Continuous Learning Loop
 
 - Capture operator decisions (accept/reject)
 - Use feedback to retrain models
 - Improve recommendation quality over time
-
----
 
 ## Ethical & Safety Considerations
 
@@ -164,8 +134,6 @@ Hybrid system:
 - Full audit logs for compliance  
 - Designed for high-stakes, regulated environments  
 
----
-
 ## High-Level Architecture
 
 - Call Input → Speech-to-Text Engine  
@@ -174,8 +142,6 @@ Hybrid system:
 - API Layer → Serve responses  
 - Agent UI → Display suggestions  
 - Data Store → Store logs + feedback  
-
----
 
 ## Experimentation Strategy
 
@@ -188,8 +154,6 @@ Measure:
 - Decision time
 - Accuracy
 - Operator satisfaction
-
----
 
 ## Launch Strategy
 
@@ -205,16 +169,12 @@ Measure:
 - Organization-wide deployment
 - Continuous optimization
 
----
-
 ## Key Product Decisions
 
 - Prioritized **decision support over automation**
 - Chose **hybrid AI approach for explainability**
 - Focused on **trust-building through transparency**
 - Designed for **real-time constraints (low latency)**
-
----
 
 ## Summary
 
@@ -225,8 +185,6 @@ This product demonstrates:
 - Real-time system thinking  
 - Strong focus on user trust and safety  
 - Data-driven product strategy  
-
----
 
 ## About This Project
 
