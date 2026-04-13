@@ -47,7 +47,7 @@ AI-Assisted Decision Rate
 | User        | Needs                                  |
 |-------------|----------------------------------------|
 | Operator    | Fast and reliable decision support     |
-| Supervisor  | Visibility and quality control         |
+| Supervisor  | Visibility and Performace Monitoring         |
 | Organization| Consistency and compliance             |
 
 ## User Workflow
