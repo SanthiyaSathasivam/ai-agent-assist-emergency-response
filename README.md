@@ -127,6 +127,8 @@ class O,P org
 
 **System Flow with Learning Loop**
 ```mermaid
+flowchart LR
+
 subgraph RT["**Real-Time Decision Flow**"]
     A["Call Input"]
     B["Speech-to-Text<br/>AWS Transcribe"]
@@ -164,7 +166,7 @@ classDef user fill:#fff2cc,stroke:#bf9000,stroke-width:1.5px,color:#111111;
 class A input;
 class B ml;
 class C,D,G hybrid;
-class E,F user;## AI Evaluation and Tradeoffs
+class E,F user;
 ```
 | Metric | Purpose |
 |--------|---------|
