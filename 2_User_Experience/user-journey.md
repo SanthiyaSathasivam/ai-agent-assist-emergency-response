@@ -18,13 +18,15 @@ The objective is to minimize decision time while improving accuracy under uncert
 
 ---
 
-# Decision Interaction Model
+# Decision Handling and System Response
 
-| Action   | When Used                          | System Behavior                  |
-|----------|-----------------------------------|----------------------------------|
-| Accept   | Recommendation is correct         | Execute immediately              |
-| Modify   | Partial correctness               | Allow quick adjustment           |
-| Reject   | Incorrect recommendation          | Proceed with manual handling     |
+| Decision Type | When It Occurs                                      | Operator Intent                         | System Response                          | Product Signal                          | Product Implication                     |
+|---------------|-----------------------------------------------------|------------------------------------------|-------------------------------------------|------------------------------------------|------------------------------------------|
+| Accept        | Recommendation matches operator expectation          | Trust in system output                   | Execute immediately                       | High confidence correctness              | Reinforce model behavior                |
+| Modify        | Recommendation partially correct                     | Adjust for missing or nuanced context    | Allow quick edit before execution         | Gap in precision or context understanding| Improve feature-level accuracy          |
+| Reject        | Recommendation incorrect or irrelevant               | Override system decision                 | Ignore recommendation, proceed manually   | Model failure or low trust               | Identify failure patterns               |
+| Delay         | Operator uncertain / needs more information          | Wait for additional input                | Keep updating recommendation dynamically  | Low confidence / ambiguous signals       | Improve real-time adaptability          |
+| No Suggestion | System unable to generate recommendation             | Fully manual handling                    | Default to manual workflow                | Coverage gap                             | Expand model capability                 |
 
 ---
 
