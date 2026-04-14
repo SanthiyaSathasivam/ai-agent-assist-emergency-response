@@ -166,6 +166,40 @@ flowchart TD
     G --> H[Feedback Loop]
     H --> D
 ```
+## AI Product Design
+
+**Approach**
+- Hybrid system combining rule-based logic and machine learning
+- Designed for reliability, explainability, and continuous learning
+
+**System Flow**
+```mermaid
+flowchart TD
+    A[Call Input] --> B[Speech-to-Text Engine]
+    B --> C[NLP Processing]
+    C --> D[Recommendation Engine]
+    D --> E[Operator Interface]
+    E --> F[Operator Decision]
+    F --> G[Feedback Capture]
+    G --> H[Model Retraining]
+    H --> D
+```
+## AI Evaluation and Tradeoffs
+
+| Metric | Purpose |
+|--------|---------|
+| Recall | Ensure critical cases are not missed |
+| Precision | Limit unnecessary alerts |
+| Latency | Maintain real-time usability |
+| Override Rate | Measure user trust |
+
+| Tradeoff | Decision |
+|----------|----------|
+| Accuracy vs Latency | Prioritize low latency for real-time use |
+| Automation vs Trust | Keep human-in-the-loop |
+| Recall vs Precision | Favor higher recall |
+| Complexity vs Explainability | Use hybrid design |
+
 ## Trust, Safety, and Compliance
 
 - Human decision-making remains final
