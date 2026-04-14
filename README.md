@@ -121,68 +121,50 @@ class O,P org
 
 ## AI Product Design
 
-Approach:
-- Hybrid system combining rule-based logic and machine learning
-- Designed for reliability, explainability, and continuous learning
-
-## Key Tradeoffs
-
-| Tradeoff                  | Decision                                      |
-|--------------------------|-----------------------------------------------|
-| Accuracy vs Latency      | Prioritize low latency for real-time use      |
-| Automation vs Trust      | Keep human-in-the-loop                        |
-| Recall vs Precision      | Favor higher recall to avoid missed cases     |
-| Complexity vs Explainability | Use hybrid model for transparency        |
-
-## AI Evaluation
-
-| Metric     | Purpose                                |
-|------------|----------------------------------------|
-| Recall     | Ensure critical cases are not missed   |
-| Precision  | Limit unnecessary alerts               |
-| Latency    | Maintain real-time usability           |
-| Override Rate | Measure user trust                  |
-
-## Learning Loop
-
-```mermaid
-flowchart LR
-    A[Operator Decision] --> B[Feedback Capture]
-    B --> C[Model Retraining]
-    C --> D[Improved Recommendations]
-    D --> A
-```
-## System Overview
-
-```mermaid
-flowchart TD
-    A[Call Input] --> B[Speech-to-Text Engine]
-    B --> C[NLP Processing]
-    C --> D[Recommendation Engine]
-    D --> E[API Layer]
-    E --> F[Operator Interface]
-
-    D --> G[Model Evaluation]
-    G --> H[Feedback Loop]
-    H --> D
-```
-## AI Product Design
-
 **Approach**
 - Hybrid system combining rule-based logic and machine learning
 - Designed for reliability, explainability, and continuous learning
 
-**System Flow**
+**System Flow with Learning Loop**
 ```mermaid
-flowchart TD
-    A[Call Input] --> B[Speech-to-Text Engine]
-    B --> C[NLP Processing]
-    C --> D[Recommendation Engine]
-    D --> E[Operator Interface]
-    E --> F[Operator Decision]
-    F --> G[Feedback Capture]
-    G --> H[Model Retraining]
-    H --> D
+flowchart LR
+
+subgraph RT["Real-Time Decision Flow"]
+    A["Call Input"]
+    B["Speech-to-Text<br/>AWS Transcribe"]
+    C["Signal Detection<br/>Rules Engine + BERT"]
+    D["Recommendation Engine<br/>Rules Engine + XGBoost Scoring Model"]
+    E["Operator Decision"]
+    A --> B --> C --> D --> E
+end
+
+subgraph CL["Continuous Learning"]
+    F["Feedback Capture"]
+    G["Feedback-Driven Updates"]
+    F --> G --> C
+    G --> D
+end
+
+E --> F
+
+H["Supervisor Dashboard<br/>Amazon CloudWatch<br/>Overrides, decision time, accuracy, latency"]
+I["Organization Analytics<br/>Amazon Redshift<br/>Trends, adoption, compliance, scaling decisions"]
+
+F --> H
+H --> I
+
+classDef input fill:#f5f5f5,stroke:#7a7a7a,stroke-width:1.5px,color:#111111;
+classDef ml fill:#dceeff,stroke:#4a86e8,stroke-width:1.5px,color:#111111;
+classDef hybrid fill:#e2f4e8,stroke:#6aa84f,stroke-width:1.5px,color:#111111;
+classDef user fill:#fff2cc,stroke:#bf9000,stroke-width:1.5px,color:#111111;
+classDef insight fill:#eadcf8,stroke:#8e7cc3,stroke-width:1.5px,color:#111111;
+
+class A input;
+class B ml;
+class C,D,G hybrid;
+class E,F user;
+class H,I insight;
+  
 ```
 ## AI Evaluation and Tradeoffs
 
@@ -229,13 +211,6 @@ Evaluation:
 | Pilot   | Limited rollout (20–30 operators)   |
 | Expand  | Improve performance and scale usage |
 | Scale   | Organization-wide deployment        |
-
-## Key Product Decisions
-
-- Prioritized decision support over automation
-- Optimized for low latency in real-time workflows
-- Focused on building trust through transparency
-- Designed for reliability in mission-critical environments
 
 ## Summary
 
