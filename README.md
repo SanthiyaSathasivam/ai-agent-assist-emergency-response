@@ -129,26 +129,26 @@ class O,P org
 ```mermaid
 flowchart LR
 
-subgraph RT["Real-Time Decision Flow"]
-    A["Call Input"]
-    B["Speech-to-Text<br/>AWS Transcribe"]
-    C["Signal Detection<br/>Rules Engine + BERT"]
-    D["Recommendation Engine<br/>Rules Engine + XGBoost Scoring Model"]
-    E["Operator Decision"]
+subgraph RT["**Real-Time Decision Flow**"]
+    A["**Call Input**"]
+    B["**Speech-to-Text**<br/>AWS Transcribe"]
+    C["**Signal Detection**<br/>Rules Engine + BERT"]
+    D["**Recommendation Engine**<br/>Rules Engine + XGBoost Scoring Model"]
+    E["**Operator Decision**"]
     A --> B --> C --> D --> E
 end
 
-subgraph CL["Continuous Learning"]
-    F["Feedback Capture"]
-    G["Feedback-Driven Updates"]
+subgraph CL["**Continuous Learning**"]
+    F["**Feedback Capture**"]
+    G["**Feedback-Driven Updates**"]
     F --> G --> C
     G --> D
 end
 
 E --> F
 
-H["Supervisor Dashboard<br/>Amazon CloudWatch<br/>(Overrides, decision time, accuracy, latency)"]
-I["Organization Analytics<br/>Amazon Redshift<br/>(Trends, adoption, compliance, scaling decisions)"]
+H["**Supervisor Dashboard**<br/>Amazon CloudWatch<br/>(**Overrides, decision time, accuracy, latency**)"]
+I["**Organization Analytics**<br/>Amazon Redshift<br/>(**Trends, adoption, compliance, scaling decisions**)"]
 
 F --> H
 H --> I
