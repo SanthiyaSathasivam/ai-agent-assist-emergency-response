@@ -22,7 +22,7 @@ Emergency operators must make critical decisions in seconds using incomplete and
 
 **Need: Real-time assistive intelligence (not automation)**
 
-## Why Now
+## Why Now?
 
 - ↑ Call volume + complexity → ↑ operator cognitive load
 - Real-time AI (speech + inference) now < **2s** latency
@@ -77,7 +77,7 @@ The MVP is designed for real-time decision support in controlled environments, w
 | Override Rate            | < 25%        |
 | System Latency           | < 2 seconds  |
 
-## What Success Looks Like
+## What Success Looks Like?
 
 - Operators consistently rely on AI recommendations during live incidents
 - Faster decision-making without increased errors or overrides
