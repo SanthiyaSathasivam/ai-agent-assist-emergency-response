@@ -41,12 +41,3 @@ The objective is to minimize decision time while improving accuracy under uncert
 
 ---
 
-# Product Implication
-
-The system must integrate into the existing workflow and:
-
-- Reduce time to understand the situation  
-- Reduce effort required to make decisions  
-- Avoid adding any additional steps  
-
-Any delay or complexity directly reduces effectiveness in real-world scenarios.
