@@ -3,13 +3,14 @@ End-to-End Product Design | Real-Time Decision Support System
 
 ## Problem
 
-Emergency response operators must make critical decisions within seconds, often with incomplete and noisy information.
+Emergency response operators must make critical decisions within seconds, often with incomplete and noisy information. Even small delays or incorrect prioritization can cost lives and reduce overall operational efficiency.
 
 Key challenges:
-- High cognitive load during live calls
-- Delays in identifying critical signals
-- Risk of incorrect or inconsistent decisions
-- Lack of intelligent decision support systems
+
+High cognitive load during live calls
+Difficulty identifying critical signals quickly
+Risk of inconsistent or incorrect decisions
+Limited intelligent decision support
 
 ## Solution
 
@@ -29,18 +30,19 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 
 ## North Star Metric
 
-AI-Assisted Decision Rate  
-(% of emergency decisions supported by AI recommendations)
+Reduce time from incident detection to responder dispatch (Time to Response).
+
+Note: AI helps operators decide faster, which reduces the overall response time.
 
 ## Key Supporting Metrics
 
-| Metric                      | Target        |
-|---------------------------|--------------|
-| Decision Time Reduction   | 25–40%       |
-| Recommendation Recall     | > 90%        |
-| Agent Adoption Rate       | > 70%        |
-| Override Rate             | < 25%        |
-| System Latency            | < 2 seconds  |
+| Metric                     | Target        |
+|--------------------------|--------------|
+| Decision Time Reduction  | 25–40%       |
+| Recommendation Recall    | > 90%        |
+| AI-Assisted Decision Rate| > 70%        |
+| Override Rate            | < 25%        |
+| System Latency           | < 2 seconds  |
 
 ## Business Outcomes
 - Faster and more reliable emergency decision-making  
