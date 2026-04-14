@@ -25,7 +25,7 @@ Emergency operators must make critical decisions in seconds using incomplete and
 ## Why Now
 
 - ↑ Call volume + complexity → ↑ operator cognitive load
-- Real-time AI (speech + inference) now < 2s latency
+- Real-time AI (speech + inference) now < **2s** latency
 - Shift: Protocol-driven → AI-assisted decisions
 - ↑ Regulatory pressure → need auditability + consistency
   
@@ -91,7 +91,7 @@ The MVP is designed for real-time decision support in controlled environments, w
 - Private EMS providers  
 
 **Impact**
-- ↓ Decision time (25–40%) → faster response  
+- ↓ Decision time (**25–40%**) → faster response  
 - ↑ Accuracy + consistency across operators  
 - ↑ Operator trust + AI adoption  
 - ↓ Cognitive load in high-pressure scenarios  
@@ -181,13 +181,13 @@ class O,P org
 | Confidence scoring (builds trust) | Cross-agency integration (high complexity) |
 | Human-in-the-loop (ensures control) | Predictive analytics (not core for MVP) |
 
-## Roadmap
+## Roadmap & Rollout Strategy
 
-| Phase        | Focus                                      |
-|--------------|--------------------------------------------|
-| Now (0 → 1)  | MVP decision support and pilot rollout      |
-| Next (1 → 10)| ML improvements and feedback loop           |
-| Later (10 → 100) | Predictive insights and scale           |
+| Phase        | Product Focus                          | Rollout Plan                          |
+|--------------|----------------------------------------|----------------------------------------|
+| Now (0 → 1)  | MVP decision support                   | Pilot (20–30 operators)               |
+| Next (1 → 10)| ML improvements + feedback loop        | Expand usage + improve performance    |
+| Later (10 → 100) | Predictive insights + scale        | Organization-wide deployment          |
 
 ## AI Product Design
 
@@ -295,14 +295,6 @@ Evaluation:
 - Decision time
 - Accuracy
 - User adoption and satisfaction
-
-## Launch Strategy
-
-| Phase   | Plan                                |
-|---------|-------------------------------------|
-| Pilot   | Limited rollout (20–30 operators)   |
-| Expand  | Improve performance and scale usage |
-| Scale   | Organization-wide deployment        |
 
 ## Summary
 
