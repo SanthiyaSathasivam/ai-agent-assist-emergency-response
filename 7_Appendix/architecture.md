@@ -9,21 +9,49 @@ Provide a high-level view of how the system processes real-time inputs and gener
 
 ## High-Level Flow
 
+## High-Level System Architecture
+
 ```mermaid
 flowchart LR
-    A[Call Input - Voice] --> B[Speech to Text]
-    B --> C[Signal Extraction]
-    C --> D[Recommendation Engine]
-    D --> E[Confidence Scoring]
-    E --> F[Operator Decision]
 
-    F -->|Accept / Modify| G[Dispatch Execution]
-    F -->|Reject| H[Manual Handling]
+    subgraph Input Layer
+        A[Call Input - Voice]
+    end
 
-    G --> I[Feedback Capture]
+    subgraph Processing Layer
+        B[Speech to Text]
+        C[Signal Extraction]
+    end
+
+    subgraph Decision Layer
+        D[Recommendation Engine]
+        E[Confidence Scoring]
+    end
+
+    subgraph Interaction Layer
+        F[Operator Decision]
+    end
+
+    subgraph Execution Layer
+        G[Dispatch Execution]
+        H[Manual Handling]
+    end
+
+    subgraph Learning Layer
+        I[Feedback Capture]
+        J[Model Improvement]
+    end
+
+    A --> B --> C --> D --> E --> F
+    F -->|Accept / Modify| G
+    F -->|Reject| H
+
+    G --> I
     H --> I
 
-    I --> J[Learning Loop]
+    I --> J
+    J --> C
+    J --> D
 ```
 # 1. End-to-End Flow
 
