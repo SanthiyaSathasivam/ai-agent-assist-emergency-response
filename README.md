@@ -249,9 +249,12 @@ Evaluation:
 ## Summary
 
 This project demonstrates:
-- Product strategy and roadmap ownership
-- AI-driven decision system design
-- Real-time system thinking
-- Metrics-driven decision-making
-- Strong focus on trust, safety, and usability
+
+- Product strategy and roadmap ownership  
+- AI-driven decision system design  
+- Real-time system thinking  
+- Metrics-driven decision-making  
+- Strong focus on trust, safety, and usability  
+
+Future improvements focus on leveraging real-world feedback to improve decision accuracy and enable faster response times.
 
