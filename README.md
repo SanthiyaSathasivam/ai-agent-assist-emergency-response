@@ -24,7 +24,7 @@ An AI-powered agent assist platform that:
 
 **Goal:** Augment human decision-making, not replace it.  
 
-**Designed to deliver real-time recommendations with a target response latency of under 2 seconds.**
+**Delivers real-time recommendations (< 2 seconds) and works alongside existing emergency systems without changing current workflows.**
 
 ## Scalability
 
