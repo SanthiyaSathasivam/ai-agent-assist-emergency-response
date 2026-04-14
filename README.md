@@ -5,12 +5,12 @@ End-to-End Product Design | Real-Time Decision Support System
 
 Emergency response operators must make critical decisions within seconds, often with incomplete and noisy information. Even small delays or incorrect prioritization can cost lives and reduce overall operational efficiency.
 
-Key challenges:
+**Key challenges:**
 
-High cognitive load during live calls
-Difficulty identifying critical signals quickly
-Risk of inconsistent or incorrect decisions
-Limited intelligent decision support
+- High cognitive load during live calls  
+- Difficulty identifying critical signals quickly  
+- Risk of inconsistent or incorrect decisions  
+- Limited intelligent decision support  
 
 ## Solution
 
