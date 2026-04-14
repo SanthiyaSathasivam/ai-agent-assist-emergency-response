@@ -18,15 +18,14 @@ An AI-powered agent assist platform that:
 
 - Transcribes calls in real time  
 - Extracts critical signals (keywords, severity, intent)  
-- Recommends next-best actions  
-- Provides confidence and explanations  
+- Recommends next-best actions with confidence and explanations  
 - Keeps human operators in control of final decisions  
 
 **Goal:** Augment human decision-making, not replace it.  
 
-**Key Differentiator:** Provides real-time AI recommendations while keeping humans fully in control of decisions.  
+**Key Differentiator:** Combines real-time AI recommendations with human-in-the-loop decision-making for faster and more reliable emergency response.  
 
-**Delivers real-time recommendations (< 2 seconds) and works alongside existing emergency systems without changing current workflows.**
+**Delivers real-time recommendations (< 2 seconds), integrates seamlessly with existing emergency systems, and gracefully falls back to manual decision-making when needed.**
 
 ## Scalability
 
@@ -65,13 +64,13 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 
 ## Users
 
-- Primary User: Emergency Operator (first responder/dispatcher)
+**Primary User:** Emergency Operator (first responder/dispatcher handling incidents in real time)
 
-| User        | Needs                                  |
-|-------------|----------------------------------------|
-| Operator    | Make fast, accurate triaging decisions under time pressure     |
-| Supervisor  | Monitor system performance and ensure correct prioritization   |
-| Organization| Ensure consistent response and compliance across incidents     |
+| User         | Need                                                      |
+|--------------|-----------------------------------------------------------|
+| Operator     | Make fast, accurate triaging decisions under time pressure |
+| Supervisor   | Monitor performance and ensure correct prioritization     |
+| Organization | Ensure consistent response and compliance across incidents|
 
 ## User Workflow
 ```mermaid
