@@ -31,26 +31,28 @@ Emergency operators must make critical decisions in seconds using incomplete and
   
 ## Solution
 
-An AI-powered agent assist platform that:
+An AI-powered real-time agent assist platform enabling emergency operators to make faster, more accurate, and consistent decisions during live incidents:
 
-- Transcribes calls in real time  
+- Transcribes calls  
 - Extracts critical signals (keywords, severity, intent)  
 - Recommends next-best actions with confidence and explanations  
 - Keeps human operators in control of final decisions  
 
-**Goal:** Augment human decision-making, not replace it.  
+**Goal:** Assist decisions, not replace operators  
 
 **Key Differentiator:** 
-- Real-time recommendations during active incidents, not only post-incident analysis
-- Human-in-the-loop design that keeps operators in control
-- Confidence scores and explanations to improve trust and usability
-- Continuous learning from operator feedback and override behavior
+- Real-time recommendations during active incidents (not post-analysis)
+- Explainable AI (confidence + reasoning)
+- Continuous learning from operator feedback
 
-**Delivers real-time recommendations (< 2 seconds) and integrates with existing emergency systems. Falls back to manual decision-making when needed.**
+**Competitive Context**
 
-## Product Vision
+| Player   | Gap                          |
+|----------|------------------------------|
+| RapidSOS | No decision support          |
+| Carbyne  | No real-time recommendations |
 
-Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
+**<2s recommendations; seamless integration; defaults to manual when needed**
 
 ## Scalability
 
@@ -81,15 +83,26 @@ The MVP is designed for real-time decision support in controlled environments, w
 - Faster decision-making without increased errors or overrides
 - Reduced variability in decision quality across operators
 - Measurable improvement in response time and protocol adherence
-  
-## Business Outcomes
 
-- Faster and more reliable emergency response decisions
-- Improved consistency and standardization across operators and regions
-- Increased operator trust and adoption of AI-assisted recommendations
-- Reduced cognitive load during high-pressure decision-making
-- Stronger compliance, auditability, and adherence to response protocols
-- Scalable foundation for deployment across regions and agencies
+## Business & Impact
+
+**Customers**
+- 911 / public safety agencies  
+- Private EMS providers  
+
+**Impact**
+- ↓ Decision time (25–40%) → faster response  
+- ↑ Accuracy + consistency across operators  
+- ↑ Operator trust + AI adoption  
+- ↓ Cognitive load in high-pressure scenarios  
+- ↑ Compliance, auditability, protocol adherence  
+- Scalable across regions and agencies  
+
+**Pricing**
+- SaaS: per operator / per call volume  
+- Tiered: assist + analytics + compliance  
+
+**ROI: Faster response + reduced errors + lower liability + better resource utilization**
 
 ## Users
 
