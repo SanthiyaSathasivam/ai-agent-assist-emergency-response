@@ -189,6 +189,17 @@ class B ml;
 class C,D,G hybrid;
 class E,F user;
 ```
+## Example Usage
+
+**Input:**  
+"Caller reports heavy smoke coming from a residential building."
+
+**Output:**  
+- Fire  
+- High Severity  
+- Dispatch fire services immediately  
+- Confidence: 92%
+  
 | Metric | Purpose |
 |--------|---------|
 | Recall | Ensure critical cases are not missed |
