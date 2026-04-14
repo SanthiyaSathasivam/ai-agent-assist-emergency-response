@@ -52,11 +52,13 @@ AI-Assisted Decision Rate
 
 ## Users
 
+- Primary User: Emergency Operator (first responder/dispatcher)
+
 | User        | Needs                                  |
 |-------------|----------------------------------------|
-| Operator    | Fast and reliable decision support     |
-| Supervisor  | Visibility and Performace Monitoring         |
-| Organization| Consistency and compliance             |
+| Operator    | Make fast, accurate triaging decisions under time pressure     |
+| Supervisor  | Monitor system performance and ensure correct prioritization   |
+| Organization| Ensure consistent response and compliance across incidents     |
 
 ## User Workflow
 ```mermaid
