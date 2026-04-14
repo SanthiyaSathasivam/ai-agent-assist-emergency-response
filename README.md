@@ -26,6 +26,13 @@ An AI-powered agent assist platform that:
 
 **Designed to deliver real-time recommendations with a target response latency of under 2 seconds.**
 
+## 📈 Scalability
+
+The MVP is designed for real-time decision support in controlled environments, with scalability considerations for future expansion:
+
+- Handles real-time incident processing with low latency (< 2 seconds)  
+- Built with a modular architecture to support future scaling as incident volume grows  
+
 ## Product Vision
 
 Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
