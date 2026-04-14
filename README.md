@@ -166,7 +166,7 @@ classDef user fill:#fff2cc,stroke:#bf9000,stroke-width:1.5px,color:#111111;
 class A input;
 class B ml;
 class C,D,G hybrid;
-class E,F user;
+class E,F user; 
 ```
 | Metric | Purpose |
 |--------|---------|
