@@ -24,10 +24,11 @@ Emergency operators must make critical decisions in seconds using incomplete and
 
 ## Why Now
 
-- Emergency call volumes and complexity are increasing, raising operator cognitive load
-- Real-time speech and AI systems now enable actionable insights within sub-second latency
-- Organizations need more consistent, auditable decision-making across operators and regions
- 
+- ↑ Call volume + complexity → ↑ operator cognitive load
+- Real-time AI (speech + inference) now < 2s latency
+- Shift: Protocol-driven → AI-assisted decisions
+- ↑ Regulatory pressure → need auditability + consistency
+  
 ## Solution
 
 An AI-powered agent assist platform that:
