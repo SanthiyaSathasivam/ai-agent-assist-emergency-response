@@ -128,7 +128,6 @@ class O,P org
 **System Flow with Learning Loop**
 ```mermaid
 flowchart LR
-
 subgraph RT["Real-Time Decision Flow"]
     A["Call Input"]
     B["Speech-to-Text<br/>AWS Transcribe"]
