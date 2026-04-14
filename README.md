@@ -25,7 +25,7 @@ An AI-powered agent assist platform that:
 
 **Key Differentiator:** Combines real-time AI recommendations with human-in-the-loop decision-making for faster and more reliable emergency response.  
 
-**Delivers real-time recommendations (< 2 seconds), integrates seamlessly with existing emergency systems, and gracefully falls back to manual decision-making when needed.**
+**Delivers real-time recommendations (< 2 seconds) and integrates with existing emergency systems. Falls back to manual decision-making when needed.**
 
 ## Scalability
 
