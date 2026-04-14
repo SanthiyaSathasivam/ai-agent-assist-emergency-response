@@ -10,8 +10,14 @@ Emergency response operators must make critical decisions within seconds, often 
 - High cognitive load during live calls  
 - Difficulty identifying critical signals quickly  
 - Risk of inconsistent or incorrect decisions  
-- Limited intelligent decision support  
+- Limited intelligent decision support
 
+## Why Now
+
+- Emergency call volumes and complexity are increasing, raising operator cognitive load
+- Real-time speech and AI systems now enable actionable insights within sub-second latency
+- Organizations need more consistent, auditable decision-making across operators and regions
+ 
 ## Solution
 
 An AI-powered agent assist platform that:
@@ -34,6 +40,7 @@ An AI-powered agent assist platform that:
 ## Product Vision
 
 Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
+
 ## Scalability
 
 The MVP is designed for real-time decision support in controlled environments, with scalability considerations for future expansion:
@@ -57,13 +64,21 @@ The MVP is designed for real-time decision support in controlled environments, w
 | Override Rate            | < 25%        |
 | System Latency           | < 2 seconds  |
 
+## What Success Looks Like
+
+- Operators consistently rely on AI recommendations during live incidents
+- Faster decision-making without increased errors or overrides
+- Reduced variability in decision quality across operators
+- Measurable improvement in response time and protocol adherence
+  
 ## Business Outcomes
-- Faster and more reliable emergency decision-making  
-- Improved consistency across operators and regions  
-- Increased trust in AI-assisted recommendations  
-- Reduced cognitive load for operators during high-pressure calls  
-- Better compliance with emergency response protocols  
-- Scalable system for deployment across multiple regions  
+
+- Faster and more reliable emergency response decisions
+- Improved consistency and standardization across operators and regions
+- Increased operator trust and adoption of AI-assisted recommendations
+- Reduced cognitive load during high-pressure decision-making
+- Stronger compliance, auditability, and adherence to response protocols
+- Scalable foundation for deployment across regions and agencies
 
 ## Users
 
@@ -232,6 +247,13 @@ class E,F user;
 - System performance monitored across different user groups
 - Full audit logging for decisions and overrides
 - Designed for high-stakes and regulated environments
+
+## Product Risks
+
+- Over-reliance on AI may reduce operator judgment in edge cases
+- Low-confidence or incorrect recommendations may reduce trust and adoption
+- False positives could lead to alert fatigue and workflow distraction
+- Performance inconsistencies across scenarios may impact reliability
 
 ## Experimentation Strategy
 
