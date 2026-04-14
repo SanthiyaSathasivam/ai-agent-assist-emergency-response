@@ -127,47 +127,45 @@ class O,P org
 
 **System Flow with Learning Loop**
 ```mermaid
-flowchart LR
-
 subgraph RT["**Real-Time Decision Flow**"]
-    A["**Call Input**"]
-    B["**Speech-to-Text**<br/>AWS Transcribe"]
-    C["**Signal Detection**<br/>Rules Engine + BERT"]
-    D["**Recommendation Engine**<br/>Rules Engine + XGBoost Scoring Model"]
-    E["**Operator Decision**"]
+    A["Call Input"]
+    B["Speech-to-Text<br/>AWS Transcribe"]
+    C["Signal Detection<br/>Rules Engine + BERT"]
+    D["Recommendation Engine<br/>Rules Engine + XGBoost Scoring Model"]
+    E["Operator Decision"]
     A --> B --> C --> D --> E
 end
 
 subgraph CL["**Continuous Learning**"]
-    F["**Feedback Capture**"]
-    G["**Feedback-Driven Updates**"]
+    F["Feedback Capture"]
+    G["Feedback-Driven Updates"]
     F --> G --> C
     G --> D
 end
 
 E --> F
 
-H["**Supervisor Dashboard**<br/>Amazon CloudWatch<br/>(**Overrides, decision time, accuracy, latency**)"]
-I["**Organization Analytics**<br/>Amazon Redshift<br/>(**Trends, adoption, compliance, scaling decisions**)"]
+H["**Supervisor Dashboard**<br/>Amazon CloudWatch<br/>(Overrides, decision time, accuracy, latency)"]
+I["**Organization Analytics**<br/>Amazon Redshift<br/>(Trends, adoption, compliance, scaling decisions)"]
 
 F --> H
 H --> I
 
+%% Section styling
+style RT fill:#eaf3ff,stroke:#4a86e8,stroke-width:2px
+style CL fill:#e9f7ef,stroke:#6aa84f,stroke-width:2px
+
+%% Node styling
 classDef input fill:#f5f5f5,stroke:#7a7a7a,stroke-width:1.5px,color:#111111;
 classDef ml fill:#dceeff,stroke:#4a86e8,stroke-width:1.5px,color:#111111;
 classDef hybrid fill:#e2f4e8,stroke:#6aa84f,stroke-width:1.5px,color:#111111;
 classDef user fill:#fff2cc,stroke:#bf9000,stroke-width:1.5px,color:#111111;
-classDef insight fill:#eadcf8,stroke:#8e7cc3,stroke-width:1.5px,color:#111111;
 
 class A input;
 class B ml;
 class C,D,G hybrid;
-class E,F user;
-class H,I insight;
-  
+class E,F user;## AI Evaluation and Tradeoffs
 ```
-## AI Evaluation and Tradeoffs
-
 | Metric | Purpose |
 |--------|---------|
 | Recall | Ensure critical cases are not missed |
