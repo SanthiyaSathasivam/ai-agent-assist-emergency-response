@@ -147,8 +147,8 @@ end
 
 E --> F
 
-H["Supervisor Dashboard<br/>Amazon CloudWatch<br/>Overrides, decision time, accuracy, latency"]
-I["Organization Analytics<br/>Amazon Redshift<br/>Trends, adoption, compliance, scaling decisions"]
+H["Supervisor Dashboard<br/>Amazon CloudWatch<br/>(Overrides, decision time, accuracy, latency)"]
+I["Organization Analytics<br/>Amazon Redshift<br/>(Trends, adoption, compliance, scaling decisions)"]
 
 F --> H
 H --> I
