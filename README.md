@@ -75,6 +75,12 @@ The MVP is designed for real-time decision support in controlled environments, w
 | Supervisor   | Monitor performance and ensure correct prioritization     |
 | Organization | Ensure consistent response and compliance across incidents|
 
+**Target User Focus**
+
+MVP is primarily focused on emergency operators handling live incidents, because they face the highest time pressure and can benefit most from real-time decision support.
+
+Supervisors and organizations are secondary users who benefit through monitoring, quality control, and operational insights.
+
 ## User Workflow
 ```mermaid
 flowchart LR
