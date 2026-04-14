@@ -27,16 +27,15 @@ An AI-powered agent assist platform that:
 
 **Delivers real-time recommendations (< 2 seconds) and integrates with existing emergency systems. Falls back to manual decision-making when needed.**
 
+## Product Vision
+
+Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
 ## Scalability
 
 The MVP is designed for real-time decision support in controlled environments, with scalability considerations for future expansion:
 
 - Handles real-time incident processing with low latency (< 2 seconds)  
 - Built with a modular architecture to support future scaling as incident volume grows  
-
-## Product Vision
-
-Enable faster, more accurate, and consistent emergency response decisions through real-time AI assistance.
 
 ## North Star Metric
 
