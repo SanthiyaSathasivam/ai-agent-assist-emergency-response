@@ -6,8 +6,8 @@ End-to-End Product Design | Real-Time Decision Support System
 Emergency operators must make critical decisions in seconds using incomplete and noisy information.
 
 **Ground Reality**
-- 80–120 calls/hour during peak
-- Decision time: < 30 seconds
+- **80–120** calls/hour during peak
+- Decision time: < **30** seconds
 - Input: emotional, fragmented, unclear
 
 **Key Challenges**
