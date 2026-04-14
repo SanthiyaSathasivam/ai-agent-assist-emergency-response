@@ -32,9 +32,9 @@ Enable faster, more accurate, and consistent emergency response decisions throug
 
 ## North Star Metric
 
-Reduce time from incident detection to responder dispatch (Time to Response).
+**Reduce time from incident detection to responder dispatch (Time to Response).**
 
-Note: AI helps operators decide faster, which reduces the overall response time.
+**Note:** AI helps operators decide faster, which reduces the overall response time.
 
 ## Key Supporting Metrics
 
