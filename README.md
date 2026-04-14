@@ -3,14 +3,24 @@ End-to-End Product Design | Real-Time Decision Support System
 
 ## Problem
 
-Emergency response operators must make critical decisions within seconds, often with incomplete and noisy information. Even small delays or incorrect prioritization can cost lives and reduce overall operational efficiency.
+Emergency operators must make critical decisions in seconds using incomplete and noisy information.
 
-**Key challenges:**
+**Ground Reality**
+- 80–120 calls/hour during peak
+- Decision time: < 30 seconds
+- Input: emotional, fragmented, unclear
 
+**Key Challenges**
 - High cognitive load during live calls  
 - Difficulty identifying critical signals quickly  
 - Risk of inconsistent or incorrect decisions  
-- Limited intelligent decision support
+
+**Failure Impact**
+- Missed signal → delayed response → life risk  
+- Incorrect prioritization → resource misallocation  
+- Cognitive overload → inconsistent outcomes  
+
+**Need: Real-time assistive intelligence (not automation)**
 
 ## Why Now
 
@@ -248,12 +258,15 @@ class E,F user;
 - Full audit logging for decisions and overrides
 - Designed for high-stakes and regulated environments
 
-## Product Risks
+## Product Risks & Mitigation
 
-- Over-reliance on AI may reduce operator judgment in edge cases
-- Low-confidence or incorrect recommendations may reduce trust and adoption
-- False positives could lead to alert fatigue and workflow distraction
-- Performance inconsistencies across scenarios may impact reliability
+| Risk            | Impact                  | Mitigation                     |
+|-----------------|------------------------|--------------------------------|
+| Over-reliance   | Reduced judgment       | Human-in-loop enforcement      |
+| False positives | Alert fatigue          | Confidence thresholds          |
+| False negatives | Missed critical cases  | High recall optimization       |
+| Bias (language) | Unequal performance    | Diverse training + monitoring  |
+| Compliance      | Legal risk             | Full audit + explainability    |
 
 ## Experimentation Strategy
 
