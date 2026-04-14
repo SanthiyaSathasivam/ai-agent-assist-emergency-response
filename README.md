@@ -189,7 +189,7 @@ class B ml;
 class C,D,G hybrid;
 class E,F user;
 ```
-## Example Usage
+**Example Usage**
 
 **Input:**  
 "Caller reports heavy smoke coming from a residential building."
