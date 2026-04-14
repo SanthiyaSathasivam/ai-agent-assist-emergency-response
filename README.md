@@ -284,14 +284,14 @@ class E,F user;
 
 ## Experimentation Strategy
 
-A/B Testing:
+**A/B Testing:**
 
 | Group | Experience           |
 |------|---------------------|
 | A    | No AI assistance     |
 | B    | AI-assisted workflow |
 
-Evaluation:
+**Evaluation:**
 - Decision time
 - Accuracy
 - User adoption and satisfaction
