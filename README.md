@@ -16,13 +16,15 @@ Limited intelligent decision support
 
 An AI-powered agent assist platform that:
 
-- Transcribes calls in real time
-- Extracts critical signals (keywords, severity, intent)
-- Recommends next-best actions
-- Provides confidence and explanation
-- Keeps human operators in control of final decisions
+Transcribes calls in real time
+Extracts critical signals (keywords, severity, intent)
+Recommends next-best actions
+Provides confidence and explanations
+Keeps human operators in control of final decisions
 
 Goal: Augment human decision-making, not replace it.
+
+Designed to deliver real-time recommendations with a target response latency of under 2 seconds.
 
 ## Product Vision
 
