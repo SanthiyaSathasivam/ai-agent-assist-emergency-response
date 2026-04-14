@@ -129,7 +129,7 @@ class O,P org
 ```mermaid
 flowchart LR
 
-subgraph RT["**Real-Time Decision Flow**"]
+subgraph RT["Real-Time Decision Flow"]
     A["Call Input"]
     B["Speech-to-Text<br/>AWS Transcribe"]
     C["Signal Detection<br/>Rules Engine + BERT"]
@@ -138,7 +138,7 @@ subgraph RT["**Real-Time Decision Flow**"]
     A --> B --> C --> D --> E
 end
 
-subgraph CL["**Continuous Learning**"]
+subgraph CL["Continuous Learning"]
     F["Feedback Capture"]
     G["Feedback-Driven Updates"]
     F --> G --> C
@@ -147,8 +147,8 @@ end
 
 E --> F
 
-H["**Supervisor Dashboard**<br/>Amazon CloudWatch<br/>(Overrides, decision time, accuracy, latency)"]
-I["**Organization Analytics**<br/>Amazon Redshift<br/>(Trends, adoption, compliance, scaling decisions)"]
+H["Supervisor Dashboard<br/>Amazon CloudWatch<br/>(Overrides, decision time, accuracy, latency)"]
+I["Organization Analytics<br/>Amazon Redshift<br/>(Trends, adoption, compliance, scaling decisions)"]
 
 F --> H
 H --> I
@@ -166,7 +166,7 @@ classDef user fill:#fff2cc,stroke:#bf9000,stroke-width:1.5px,color:#111111;
 class A input;
 class B ml;
 class C,D,G hybrid;
-class E,F user; 
+class E,F user;
 ```
 | Metric | Purpose |
 |--------|---------|
