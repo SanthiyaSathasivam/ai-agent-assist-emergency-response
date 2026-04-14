@@ -5,7 +5,26 @@
 Provide a high-level view of how the system processes real-time inputs and generates decision recommendations during live incidents.
 
 ---
+# System Architecture Overview
 
+## High-Level Flow
+
+```mermaid
+flowchart LR
+    A[Call Input - Voice] --> B[Speech to Text]
+    B --> C[Signal Extraction]
+    C --> D[Recommendation Engine]
+    D --> E[Confidence Scoring]
+    E --> F[Operator Decision]
+
+    F -->|Accept / Modify| G[Dispatch Execution]
+    F -->|Reject| H[Manual Handling]
+
+    G --> I[Feedback Capture]
+    H --> I
+
+    I --> J[Learning Loop]
+```
 # 1. End-to-End Flow
 
 | Stage                  | Input                  | Processing                          | Output                          |
