@@ -239,7 +239,7 @@ class E,F user;
 ```
 **Example Usage**
 
-**Input:**  
+**Input:**
 "Caller reports heavy smoke coming from a residential building."
 
 **Output:**  
