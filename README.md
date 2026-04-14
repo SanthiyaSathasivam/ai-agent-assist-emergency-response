@@ -199,20 +199,22 @@ class E,F user;
 - High Severity  
 - Dispatch fire services immediately  
 - Confidence: 92%
-  
-| Metric | Purpose |
-|--------|---------|
-| Recall | Ensure critical cases are not missed |
-| Precision | Limit unnecessary alerts |
-| Latency | Maintain real-time usability |
-| Override Rate | Measure user trust |
 
-| Tradeoff | Decision |
-|----------|----------|
-| Accuracy vs Latency | Prioritize low latency for real-time use |
-| Automation vs Trust | Keep human-in-the-loop |
-| Recall vs Precision | Favor higher recall |
-| Complexity vs Explainability | Use hybrid design |
+## AI Metrics & Trade-offs
+  
+| Metric        | Purpose                                   |
+|---------------|-------------------------------------------|
+| Recall        | Ensure critical cases are not missed      |
+| Precision     | Limit unnecessary alerts                  |
+| Latency       | Maintain real-time usability              |
+| Override Rate | Measure user trust                        |
+
+| Trade-off                 | Decision                                  |
+|---------------------------|--------------------------------------------|
+| Accuracy vs Latency       | Prioritize low latency for real-time use   |
+| Automation vs Trust       | Keep human-in-the-loop                     |
+| Recall vs Precision       | Favor higher recall                        |
+| Complexity vs Explainability | Use hybrid design                     |
 
 ## Trust, Safety, and Compliance
 
