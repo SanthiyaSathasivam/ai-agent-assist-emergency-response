@@ -43,7 +43,6 @@ AI-Assisted Decision Rate
 | System Latency            | < 2 seconds  |
 
 ## Business Outcomes
-
 - Faster and more reliable emergency decision-making  
 - Improved consistency across operators and regions  
 - Increased trust in AI-assisted recommendations  
