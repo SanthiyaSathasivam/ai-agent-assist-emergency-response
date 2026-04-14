@@ -24,6 +24,8 @@ An AI-powered agent assist platform that:
 
 **Goal:** Augment human decision-making, not replace it.  
 
+**Key Differentiator:** Provides real-time AI recommendations while keeping humans fully in control of decisions.  
+
 **Delivers real-time recommendations (< 2 seconds) and works alongside existing emergency systems without changing current workflows.**
 
 ## Scalability
