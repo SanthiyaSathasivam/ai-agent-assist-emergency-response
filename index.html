@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DispatchIQ — AI Agent Assist for Emergency Response</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .pulse-dot { animation: pulse 1.5s infinite; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+  }
+  .live-bar { animation: live 1.2s ease-in-out infinite; }
+  @keyframes live {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+  .transcript-line { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .confidence-ring { transform: rotate(-90deg); }
+  .scrollbar::-webkit-scrollbar { width: 6px; }
+  .scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .tab-active { background: #0f172a; color: white; }
+  .severity-critical { background: linear-gradient(135deg, #dc2626, #991b1b); }
+  .severity-high { background: linear-gradient(135deg, #ea580c, #c2410c); }
+  .severity-medium { background: linear-gradient(135deg, #ca8a04, #a16207); }
+  .severity-low { background: linear-gradient(135deg, #64748b, #475569); }
+  .fade-swap { animation: fadeSwap 0.5s ease-out; }
+  @keyframes fadeSwap {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .incoming-ring {
+    animation: ring 1s ease-in-out infinite;
+  }
+  @keyframes ring {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220,38,38,0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 14px rgba(220,38,38,0); }
+  }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+<!-- TOP NAV -->
+<header class="bg-slate-900 text-white border-b border-slate-800">
+  <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center font-bold">D</div>
+      <div>
+        <div class="font-semibold tracking-tight">DispatchIQ</div>
+        <div class="text-xs text-slate-400">AI Agent Assist for Emergency Response</div>
+      </div>
+    </div>
+    <nav class="flex gap-1 bg-slate-800 rounded-lg p-1 text-sm">
+      <button onclick="switchView('operator')" id="tab-operator" class="tab-active px-4 py-1.5 rounded-md transition">Operator Console</button>
+      <button onclick="switchView('supervisor')" id="tab-supervisor" class="px-4 py-1.5 rounded-md transition hover:bg-slate-700">Supervisor Dashboard</button>
+      <button onclick="switchView('organization')" id="tab-organization" class="px-4 py-1.5 rounded-md transition hover:bg-slate-700">Organization Analytics</button>
+    </nav>
+    <div class="flex items-center gap-3 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+        <span class="text-slate-300">System Healthy</span>
+      </div>
+      <div class="border-l border-slate-700 pl-3 flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-slate-600 flex items-center justify-center text-xs font-medium">SS</div>
+        <div class="text-xs">
+          <div class="font-medium">Santhiya Sathasivam</div>
+          <div class="text-slate-400">Operator · Station 14</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== OPERATOR VIEW ===================== -->
+<main id="view-operator" class="view max-w-[1600px] mx-auto px-6 py-5 relative">
+
+  <!-- Call state overlays (hidden by default) -->
+  <div id="callEndedOverlay" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm rounded-xl" style="margin: 20px 24px;">
+    <div class="bg-white rounded-2xl shadow-2xl px-10 py-8 text-center max-w-md fade-swap">
+      <div id="callEndedIcon" class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 text-2xl">✓</div>
+      <div id="callEndedTitle" class="text-xl font-semibold mb-1">Call Resolved</div>
+      <div id="callEndedDetail" class="text-sm text-slate-600 mb-5">Units dispatched · Feedback logged for model training</div>
+      <button onclick="dismissResolvedOverlay()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-2 rounded-lg text-sm transition">OK, Continue</button>
+      <div class="mt-4 text-xs text-slate-500">Review recommendations · Click toast to answer next call</div>
+    </div>
+  </div>
+
+  <!-- Side toast for incoming call (persistent until user clicks Answer) -->
+  <div id="incomingToast" class="hidden fixed right-6 top-20 z-40 bg-white rounded-xl shadow-2xl border-2 border-red-300 p-4 w-80 fade-swap">
+    <div class="flex items-start gap-3 mb-3">
+      <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center text-lg incoming-ring flex-shrink-0">📞</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-semibold text-red-600">Incoming 911 Call</div>
+        <div class="text-xs text-slate-600 mt-0.5" id="incomingFrom">From: +1 (415) 555-0192</div>
+        <div class="text-xs text-slate-500 mt-0.5" id="incomingRing">Ringing · <span id="ringSecs">0</span>s</div>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="answerCall()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg text-xs transition">📞 Answer Call</button>
+      <button onclick="dismissToast()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition">Later</button>
+    </div>
+  </div>
+
+  <!-- Incident Header -->
+  <div id="incidentHeader" class="flex items-center justify-between mb-5">
+    <div class="flex items-center gap-4">
+      <div id="severityBadge" class="severity-critical text-white px-3 py-1 rounded-md text-xs font-bold tracking-wider">CRITICAL · P1</div>
+      <div>
+        <div class="text-xs text-slate-500 uppercase tracking-wider">Incident</div>
+        <div class="font-semibold text-lg" id="incidentTitle">INC-2026-04829 · Structure Fire with Possible Entrapment</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-6 text-sm">
+      <div>
+        <div class="text-xs text-slate-500">Call Duration</div>
+        <div class="font-mono font-semibold" id="callTimer">00:00:00</div>
+      </div>
+      <div>
+        <div class="text-xs text-slate-500">Time to Recommendation</div>
+        <div class="font-mono font-semibold text-emerald-600" id="ttRec">1.8s</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-red-500 pulse-dot"></span>
+        <span class="font-medium">LIVE CALL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-5">
+    <!-- LEFT: Caller + Transcript -->
+    <section class="col-span-4 space-y-5">
+      <!-- Caller Info -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5" id="callerCard">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">Caller Information</h3>
+          <span class="text-xs text-slate-500">Auto-detected</span>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">📞</div>
+            <div>
+              <div class="font-medium" id="callerPhone">+1 (415) 555-0192</div>
+              <div class="text-xs text-slate-500" id="callerCarrier">Mobile · Verified Carrier</div>
+            </div>
+          </div>
+          <div class="border-t border-slate-100 pt-3 grid grid-cols-2 gap-3">
+            <div>
+              <div class="text-xs text-slate-500">Location (E911)</div>
+              <div class="font-medium" id="callerAddr">412 Oak Street, Apt 3B</div>
+              <div class="text-xs text-slate-500" id="callerCity">San Francisco, CA · ±8m</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500">Caller Stress</div>
+              <div class="font-medium text-red-600" id="callerStress">Elevated (87%)</div>
+              <div class="text-xs text-slate-500">Voice analysis</div>
+            </div>
+          </div>
+          <div class="border-t border-slate-100 pt-3">
+            <div class="text-xs text-slate-500 mb-1">Prior Incidents at Address</div>
+            <div class="text-xs" id="callerHistory">2 historical · Last: 2024-08 (CO alarm)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Transcript -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold">Live Transcript</h3>
+          <div class="flex items-end gap-0.5 h-4">
+            <div class="w-0.5 bg-emerald-500 live-bar" style="height:100%; animation-delay:0s"></div>
+            <div class="w-0.5 bg-emerald-500 live-bar" style="height:100%; animation-delay:0.2s"></div>
+            <div class="w-0.5 bg-emerald-500 live-bar" style="height:100%; animation-delay:0.4s"></div>
+            <div class="w-0.5 bg-emerald-500 live-bar" style="height:100%; animation-delay:0.6s"></div>
+          </div>
+        </div>
+        <div id="transcript" class="space-y-3 max-h-[340px] overflow-y-auto scrollbar pr-2 text-sm"></div>
+      </div>
+    </section>
+
+    <!-- CENTER: AI Recommendations -->
+    <section class="col-span-5 space-y-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">AI</div>
+            <h3 class="font-semibold">Agent Recommendations</h3>
+          </div>
+          <span class="text-xs text-slate-500">Updated 0.4s ago · Model v3.2.1</span>
+        </div>
+
+        <!-- Primary Recommendation -->
+        <div class="border-2 border-indigo-200 bg-indigo-50/40 rounded-xl p-4 mb-4" id="primaryReco">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 pr-4">
+              <div class="text-xs text-indigo-700 uppercase tracking-wider font-semibold mb-1">Primary Recommendation</div>
+              <div class="text-lg font-semibold" id="recoTitle">Dispatch Fire Engine + Rescue + Ambulance</div>
+              <div class="text-sm text-slate-600" id="recoSubtitle">Structure fire with confirmed civilian inside · Possible entrapment</div>
+            </div>
+            <div class="relative w-16 h-16 flex-shrink-0">
+              <svg class="confidence-ring w-16 h-16">
+                <circle cx="32" cy="32" r="28" stroke="#e2e8f0" stroke-width="6" fill="none"/>
+                <circle id="confCircle" cx="32" cy="32" r="28" stroke="#10b981" stroke-width="6" fill="none"
+                  stroke-dasharray="175.9" stroke-dashoffset="21.1" stroke-linecap="round"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-base font-bold text-emerald-600" id="confPct">88%</span>
+                <span class="text-[9px] text-slate-500 -mt-0.5">confidence</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2 mb-4" id="recoUnits"></div>
+
+          <details class="text-sm mb-4">
+            <summary class="cursor-pointer text-indigo-700 font-medium">Why this recommendation?</summary>
+            <ul class="mt-2 space-y-1 text-slate-600 pl-5 list-disc" id="recoReasons"></ul>
+          </details>
+
+          <div class="flex gap-2">
+            <button onclick="decide('accept')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition">✓ Accept & Dispatch</button>
+            <button onclick="decide('modify')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm transition">✎ Modify</button>
+            <button onclick="decide('reject')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2.5 rounded-lg text-sm transition">✕ Reject</button>
+          </div>
+        </div>
+
+        <!-- Alternatives -->
+        <div>
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Alternative Actions</div>
+          <div class="space-y-2" id="alternatives"></div>
+        </div>
+      </div>
+
+      <!-- Protocol Checklist -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold" id="protocolTitle">Protocol Checklist · Structure Fire</h3>
+          <span class="text-xs text-emerald-600 font-medium" id="protocolProgress">5 of 7 complete</span>
+        </div>
+        <div class="space-y-2 text-sm" id="protocolList"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Resources + Feedback -->
+    <section class="col-span-3 space-y-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold mb-3">Nearest Resources</h3>
+        <div class="rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 h-40 relative mb-3">
+          <svg viewBox="0 0 200 160" class="w-full h-full">
+            <rect width="200" height="160" fill="#e2e8f0"/>
+            <path d="M0 80 L200 80 M100 0 L100 160" stroke="#cbd5e1" stroke-width="1"/>
+            <path d="M0 40 L200 40 M0 120 L200 120 M50 0 L50 160 M150 0 L150 160" stroke="#cbd5e1" stroke-width="0.5"/>
+            <circle cx="100" cy="80" r="8" fill="#dc2626"/>
+            <circle cx="100" cy="80" r="14" fill="none" stroke="#dc2626" stroke-width="1.5" opacity="0.5"/>
+            <text x="100" y="105" text-anchor="middle" font-size="8" fill="#0f172a" font-weight="bold">Incident</text>
+            <circle cx="60" cy="50" r="5" fill="#ef4444"/>
+            <text x="60" y="44" text-anchor="middle" font-size="7" fill="#0f172a">E14</text>
+            <circle cx="140" cy="110" r="5" fill="#f97316"/>
+            <text x="140" y="124" text-anchor="middle" font-size="7" fill="#0f172a">T9</text>
+            <circle cx="40" cy="120" r="5" fill="#3b82f6"/>
+            <text x="40" y="134" text-anchor="middle" font-size="7" fill="#0f172a">M22</text>
+          </svg>
+        </div>
+        <div class="space-y-2 text-xs" id="resourceList"></div>
+      </div>
+
+      <!-- Feedback Loop -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-purple-100 flex items-center justify-center text-purple-700 text-xs font-bold">↻</div>
+          <h3 class="font-semibold">Feedback Loop</h3>
+        </div>
+        <p class="text-xs text-slate-600 mb-3">Every Accept · Modify · Reject decision is logged and used to retrain the model nightly.</p>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between bg-emerald-50 px-3 py-2 rounded-md">
+            <span>Accept rate (your shift)</span>
+            <span class="font-semibold text-emerald-700" id="acceptRate">78%</span>
+          </div>
+          <div class="flex justify-between bg-amber-50 px-3 py-2 rounded-md">
+            <span>Modify rate</span>
+            <span class="font-semibold text-amber-700" id="modifyRate">15%</span>
+          </div>
+          <div class="flex justify-between bg-red-50 px-3 py-2 rounded-md">
+            <span>Reject rate</span>
+            <span class="font-semibold text-red-700" id="rejectRate">7%</span>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+          Calls handled this shift: <span class="font-semibold text-slate-700" id="callCount">0</span>
+        </div>
+      </div>
+
+      <!-- Recent Incidents -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold mb-3 text-sm">Active Incident Queue</h3>
+        <div class="space-y-2 text-xs" id="queueList"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ===================== SUPERVISOR VIEW ===================== -->
+<main id="view-supervisor" class="view max-w-[1600px] mx-auto px-6 py-5 hidden">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-xl font-semibold">Supervisor Dashboard</h2>
+      <p class="text-sm text-slate-500">Real-time performance and decision quality across operators · Shift: 06:00 — 18:00</p>
+    </div>
+    <div class="flex gap-2 text-sm">
+      <select class="bg-white border border-slate-200 rounded-lg px-3 py-1.5">
+        <option>All Stations</option><option>Station 14</option><option>Station 22</option>
+      </select>
+      <select class="bg-white border border-slate-200 rounded-lg px-3 py-1.5">
+        <option>Last 24 hours</option><option>Last 7 days</option><option>Last 30 days</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-6 gap-4 mb-5">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">Time to Response</div><div class="text-2xl font-bold mt-1">42<span class="text-base text-slate-500">s</span></div><div class="text-xs text-emerald-600 mt-1">↓ 38% vs baseline</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">Decision Time</div><div class="text-2xl font-bold mt-1">8.4<span class="text-base text-slate-500">s</span></div><div class="text-xs text-emerald-600 mt-1">↓ 51% vs baseline</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">Reco Recall</div><div class="text-2xl font-bold mt-1">94.2<span class="text-base text-slate-500">%</span></div><div class="text-xs text-emerald-600 mt-1">↑ 2.1pp this week</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">AI-Assisted Rate</div><div class="text-2xl font-bold mt-1">86<span class="text-base text-slate-500">%</span></div><div class="text-xs text-emerald-600 mt-1">↑ Adoption rising</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">Override Rate</div><div class="text-2xl font-bold mt-1">12<span class="text-base text-slate-500">%</span></div><div class="text-xs text-amber-600 mt-1">→ Within target</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-xs text-slate-500 uppercase tracking-wider">System Latency</div><div class="text-2xl font-bold mt-1">340<span class="text-base text-slate-500">ms</span></div><div class="text-xs text-emerald-600 mt-1">p95 healthy</div></div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-5">
+    <div class="col-span-8 space-y-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">Time to Response — Trend (last 14 days)</h3>
+          <div class="flex gap-3 text-xs">
+            <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-indigo-500"></span>With AI Assist</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-slate-400"></span>Baseline (no AI)</span>
+          </div>
+        </div>
+        <canvas id="trendChart" height="100"></canvas>
+      </div>
+      <div class="grid grid-cols-2 gap-5">
+        <div class="bg-white rounded-xl border border-slate-200 p-5"><h3 class="font-semibold mb-4">Decision Distribution</h3><canvas id="decisionChart" height="160"></canvas></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-5"><h3 class="font-semibold mb-4">Confidence vs Outcome</h3><canvas id="confidenceChart" height="160"></canvas></div>
+      </div>
+    </div>
+    <div class="col-span-4 space-y-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold mb-3">Active Operators</h3>
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">SS</div><div class="flex-1"><div class="font-medium">Santhiya Sathasivam</div><div class="text-xs text-slate-500">On call · Station 14</div></div><span class="w-2 h-2 rounded-full bg-red-500 pulse-dot"></span></div>
+          <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">JM</div><div class="flex-1"><div class="font-medium">Jordan M.</div><div class="text-xs text-slate-500">On call · INC-04828</div></div><span class="w-2 h-2 rounded-full bg-red-500 pulse-dot"></span></div>
+          <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">SR</div><div class="flex-1"><div class="font-medium">Sam R.</div><div class="text-xs text-slate-500">Available</div></div><span class="w-2 h-2 rounded-full bg-emerald-500"></span></div>
+          <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium">PL</div><div class="flex-1"><div class="font-medium">Priya L.</div><div class="text-xs text-slate-500">Wrap-up · INC-04826</div></div><span class="w-2 h-2 rounded-full bg-amber-500"></span></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold mb-3">Quality Alerts</h3>
+        <div class="space-y-2 text-sm">
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-3"><div class="font-medium text-amber-800 text-xs">⚠ Override spike — Station 22</div><div class="text-xs text-amber-700 mt-1">Override rate at 23% (target ≤15%) past 4 hours. Review cardiac protocol.</div></div>
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3"><div class="font-medium text-blue-800 text-xs">ⓘ Model drift detected</div><div class="text-xs text-blue-700 mt-1">Confidence calibration drift on "MVA" class. Retraining queued.</div></div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3"><div class="font-medium text-emerald-800 text-xs">✓ SLA met</div><div class="text-xs text-emerald-700 mt-1">100% of P1 calls dispatched under 60s today.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ===================== ORGANIZATION VIEW ===================== -->
+<main id="view-organization" class="view max-w-[1600px] mx-auto px-6 py-5 hidden">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-xl font-semibold">Organization Analytics</h2>
+      <p class="text-sm text-slate-500">Compliance, consistency, and outcomes across the organization · Q2 2026</p>
+    </div>
+    <div class="flex gap-2 text-sm">
+      <button class="px-3 py-1.5 bg-slate-900 text-white rounded-lg">Export Report</button>
+    </div>
+  </div>
+  <div class="grid grid-cols-4 gap-4 mb-5">
+    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-xl p-5"><div class="text-xs uppercase tracking-wider opacity-80">Compliance Score</div><div class="text-3xl font-bold mt-1">98.4%</div><div class="text-xs opacity-80 mt-1">NFPA 1221 · NENA i3 standards</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-5"><div class="text-xs text-slate-500 uppercase tracking-wider">Total Incidents</div><div class="text-3xl font-bold mt-1">12,847</div><div class="text-xs text-slate-600 mt-1">Quarter to date</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-5"><div class="text-xs text-slate-500 uppercase tracking-wider">Lives Impacted</div><div class="text-3xl font-bold mt-1">3,219</div><div class="text-xs text-emerald-600 mt-1">↑ 9% year-over-year</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-5"><div class="text-xs text-slate-500 uppercase tracking-wider">Avg Cost per Incident</div><div class="text-3xl font-bold mt-1">$284</div><div class="text-xs text-emerald-600 mt-1">↓ 22% w/ AI assist</div></div>
+  </div>
+  <div class="grid grid-cols-12 gap-5">
+    <div class="col-span-8 bg-white rounded-xl border border-slate-200 p-5"><h3 class="font-semibold mb-4">Incident Volume by Category — Q2 2026</h3><canvas id="orgChart" height="120"></canvas></div>
+    <div class="col-span-4 bg-white rounded-xl border border-slate-200 p-5">
+      <h3 class="font-semibold mb-3">Compliance Breakdown</h3>
+      <div class="space-y-3 text-sm">
+        <div><div class="flex justify-between mb-1"><span>Protocol adherence</span><span class="font-semibold">99.1%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:99.1%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>Documentation</span><span class="font-semibold">97.8%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:97.8%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>Audit trail</span><span class="font-semibold">100%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:100%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>Bias monitoring</span><span class="font-semibold">96.4%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:96.4%"></div></div></div>
+        <div><div class="flex justify-between mb-1"><span>Data privacy (HIPAA)</span><span class="font-semibold">100%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:100%"></div></div></div>
+      </div>
+    </div>
+    <div class="col-span-6 bg-white rounded-xl border border-slate-200 p-5">
+      <h3 class="font-semibold mb-3">Outcome Improvements vs Pre-AI Baseline</h3>
+      <div class="space-y-3 text-sm">
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg"><span>Avg dispatch time</span><div class="flex items-center gap-2"><span class="text-slate-400 line-through">68s</span><span class="font-bold text-emerald-600">42s</span></div></div>
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg"><span>Cardiac arrest survival</span><div class="flex items-center gap-2"><span class="text-slate-400 line-through">11.2%</span><span class="font-bold text-emerald-600">14.8%</span></div></div>
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg"><span>Wrong-unit dispatches</span><div class="flex items-center gap-2"><span class="text-slate-400 line-through">4.1%</span><span class="font-bold text-emerald-600">1.3%</span></div></div>
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg"><span>Operator burnout score</span><div class="flex items-center gap-2"><span class="text-slate-400 line-through">High</span><span class="font-bold text-emerald-600">Moderate</span></div></div>
+      </div>
+    </div>
+    <div class="col-span-6 bg-white rounded-xl border border-slate-200 p-5">
+      <h3 class="font-semibold mb-3">Cross-Station Consistency</h3>
+      <table class="w-full text-sm">
+        <thead class="text-xs text-slate-500 uppercase tracking-wider"><tr class="border-b border-slate-100"><th class="text-left py-2">Station</th><th class="text-right">Volume</th><th class="text-right">Avg TtR</th><th class="text-right">Override %</th><th class="text-right">Compliance</th></tr></thead>
+        <tbody>
+          <tr class="border-b border-slate-100"><td class="py-2">Station 14</td><td class="text-right">3,201</td><td class="text-right">39s</td><td class="text-right">11%</td><td class="text-right text-emerald-600">99.2%</td></tr>
+          <tr class="border-b border-slate-100"><td class="py-2">Station 22</td><td class="text-right">2,847</td><td class="text-right">44s</td><td class="text-right text-amber-600">23%</td><td class="text-right">97.4%</td></tr>
+          <tr class="border-b border-slate-100"><td class="py-2">Station 31</td><td class="text-right">2,613</td><td class="text-right">41s</td><td class="text-right">13%</td><td class="text-right text-emerald-600">98.9%</td></tr>
+          <tr class="border-b border-slate-100"><td class="py-2">Station 47</td><td class="text-right">2,209</td><td class="text-right">45s</td><td class="text-right">14%</td><td class="text-right">98.1%</td></tr>
+          <tr><td class="py-2">Station 56</td><td class="text-right">1,977</td><td class="text-right">43s</td><td class="text-right">12%</td><td class="text-right text-emerald-600">99.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer class="max-w-[1600px] mx-auto px-6 py-6 text-xs text-slate-500 flex justify-between">
+  <div>DispatchIQ Prototype · For demonstration purposes only</div>
+  <div>Model v3.2.1 · Last sync 2026-04-15 09:14 UTC</div>
+</footer>
+
+<script>
+  // ============ INCIDENT DATASET ============
+  const INCIDENTS = [
+    {
+      id: 'INC-2026-04829',
+      severity: { label: 'CRITICAL · P1', cls: 'severity-critical' },
+      title: 'Structure Fire with Possible Entrapment',
+      ttRec: '1.8s',
+      caller: {
+        phone: '+1 (415) 555-0192', carrier: 'Mobile · Verified Carrier',
+        addr: '412 Oak Street, Apt 3B', city: 'San Francisco, CA · ±8m',
+        stress: 'Elevated (87%)', stressColor: 'text-red-600',
+        history: '2 historical · Last: 2024-08 (CO alarm)'
+      },
+      transcript: [
+        { t:'00:00:04', who:'Operator', text:"911, what's your emergency?" },
+        { t:'00:00:08', who:'Caller', text:`There's <span class="bg-yellow-200 px-1 rounded">smoke coming from</span> the apartment next door, I think there's a <span class="bg-red-200 px-1 rounded">fire</span>!` },
+        { t:'00:00:18', who:'Operator', text:"Where are you located? Are there people inside?" },
+        { t:'00:00:24', who:'Caller', text:`412 Oak Street, third floor. <span class="bg-red-200 px-1 rounded">An elderly woman lives there alone</span> — I can hear her but she's not answering the door.` },
+        { t:'00:01:03', who:'Caller', text:`The smoke is getting <span class="bg-red-200 px-1 rounded">thicker</span>. I think I hear a smoke alarm. Please hurry.` }
+      ],
+      reco: {
+        title: 'Dispatch Fire Engine + Rescue + Ambulance',
+        subtitle: 'Structure fire with confirmed civilian inside · Possible entrapment',
+        confidence: 88,
+        units: [
+          { icon:'🚒', name:'Engine 14', eta:'4 min', status:'Available' },
+          { icon:'🪜', name:'Truck 9 (Rescue)', eta:'6 min', status:'Available' },
+          { icon:'🚑', name:'Medic 22', eta:'5 min', status:'Available' }
+        ],
+        reasons: [
+          'Keywords detected: "fire", "smoke", "flames" (high salience)',
+          'Civilian presence indicated: "elderly woman", "not answering"',
+          'Escalation pattern in caller stress (62% → 87%)',
+          'Address history: residential multi-unit, 1 prior CO incident',
+          'Similar cases (n=247) had avg 91% rescue dispatch rate'
+        ]
+      },
+      alternatives: [
+        { title:'Fire Engine only (no rescue)', sub:'If entrapment unconfirmed', pct:62, color:'text-amber-600' },
+        { title:'Add HAZMAT Unit', sub:'If chemical signs detected', pct:19, color:'text-slate-500' },
+        { title:'Police escort', sub:'Crowd / traffic control', pct:34, color:'text-slate-500' }
+      ],
+      protocol: { title:'Protocol Checklist · Structure Fire', done:5, total:7, items:[
+        { done:true, text:'Confirm location' },
+        { done:true, text:'Identify fire source' },
+        { done:true, text:'Check for occupants' },
+        { done:true, text:'Assess smoke severity' },
+        { done:true, text:'Dispatch primary units' },
+        { done:false, text:'Provide pre-arrival instructions to caller' },
+        { done:false, text:'Notify hospital of incoming' }
+      ]},
+      resources: [
+        { name:'Engine 14', dist:'0.8 mi' },
+        { name:'Truck 9', dist:'1.4 mi' },
+        { name:'Medic 22', dist:'1.1 mi' },
+        { name:'SF General Hospital', dist:'2.6 mi' }
+      ]
+    },
+    {
+      id: 'INC-2026-04830',
+      severity: { label: 'HIGH · P2', cls: 'severity-high' },
+      title: 'Motor Vehicle Accident with Injuries',
+      ttRec: '1.6s',
+      caller: {
+        phone: '+1 (415) 555-0347', carrier: 'Mobile · Verified Carrier',
+        addr: 'US-101 N near Exit 434B', city: 'San Francisco, CA · ±12m',
+        stress: 'High (74%)', stressColor: 'text-orange-600',
+        history: 'No prior incidents · First-time caller'
+      },
+      transcript: [
+        { t:'00:00:03', who:'Operator', text:"911, what's your emergency?" },
+        { t:'00:00:06', who:'Caller', text:`I just saw a <span class="bg-red-200 px-1 rounded">bad car crash</span> on the 101. Two cars, one is <span class="bg-red-200 px-1 rounded">flipped over</span>.` },
+        { t:'00:00:14', who:'Operator', text:"Are there injuries? Is anyone trapped?" },
+        { t:'00:00:19', who:'Caller', text:`Yes! I see a <span class="bg-red-200 px-1 rounded">woman bleeding</span> in the flipped car, she's conscious but stuck. The other driver is walking around okay.` },
+        { t:'00:00:48', who:'Caller', text:`There's <span class="bg-yellow-200 px-1 rounded">gasoline leaking</span> from one of the cars. Traffic is backing up fast.` }
+      ],
+      reco: {
+        title: 'Dispatch EMS + Fire + CHP + Tow',
+        subtitle: 'MVA with entrapment and fuel leak · Multi-agency response',
+        confidence: 92,
+        units: [
+          { icon:'🚑', name:'Medic 22', eta:'7 min', status:'Available' },
+          { icon:'🚒', name:'Engine 14 (Extrication)', eta:'8 min', status:'Available' },
+          { icon:'🚓', name:'CHP Unit 412', eta:'5 min', status:'Available' },
+          { icon:'🛻', name:'Tow Dispatch', eta:'15 min', status:'Queued' }
+        ],
+        reasons: [
+          'Keywords: "crash", "flipped", "bleeding", "trapped" (critical salience)',
+          'Fuel leak detected → fire hazard risk',
+          'Traffic disruption on major highway → police required',
+          'Entrapment signal → rescue extrication tools needed',
+          'Similar cases (n=184) had avg 89% multi-agency dispatch'
+        ]
+      },
+      alternatives: [
+        { title:'EMS only (if fuel leak unconfirmed)', sub:'Reduce resource footprint', pct:41, color:'text-slate-500' },
+        { title:'Add HAZMAT Unit', sub:'For significant fuel spill', pct:36, color:'text-slate-500' },
+        { title:'Medevac helicopter', sub:'If hospital transport delayed', pct:22, color:'text-slate-500' }
+      ],
+      protocol: { title:'Protocol Checklist · MVA', done:4, total:7, items:[
+        { done:true, text:'Confirm location and lanes affected' },
+        { done:true, text:'Assess number of vehicles involved' },
+        { done:true, text:'Identify injuries' },
+        { done:true, text:'Check for entrapment' },
+        { done:false, text:'Evaluate fuel/chemical hazards' },
+        { done:false, text:'Coordinate with CHP for traffic' },
+        { done:false, text:'Notify trauma center' }
+      ]},
+      resources: [
+        { name:'Medic 22', dist:'2.1 mi' },
+        { name:'Engine 14', dist:'2.8 mi' },
+        { name:'CHP Unit 412', dist:'1.6 mi' },
+        { name:'SF General Trauma', dist:'4.3 mi' }
+      ]
+    },
+    {
+      id: 'INC-2026-04831',
+      severity: { label: 'CRITICAL · P1', cls: 'severity-critical' },
+      title: 'Cardiac Event · Possible Arrest',
+      ttRec: '1.4s',
+      caller: {
+        phone: '+1 (415) 555-0288', carrier: 'Landline · Verified',
+        addr: '88 Pine Street, Unit 1412', city: 'San Francisco, CA · ±5m',
+        stress: 'Severe (93%)', stressColor: 'text-red-600',
+        history: '1 historical · Last: 2023-11 (medical)'
+      },
+      transcript: [
+        { t:'00:00:02', who:'Operator', text:"911, what's your emergency?" },
+        { t:'00:00:05', who:'Caller', text:`My husband just <span class="bg-red-200 px-1 rounded">collapsed</span>! He's <span class="bg-red-200 px-1 rounded">not breathing</span>!` },
+        { t:'00:00:11', who:'Operator', text:"Stay on the line. How old is he? Any medical history?" },
+        { t:'00:00:16', who:'Caller', text:`He's 62, has <span class="bg-yellow-200 px-1 rounded">heart disease</span>, takes blood thinners. Please send someone!` },
+        { t:'00:00:34', who:'Caller', text:`I don't know how to do CPR! He's <span class="bg-red-200 px-1 rounded">turning blue</span>!` }
+      ],
+      reco: {
+        title: 'Dispatch ALS Ambulance + Fire Engine (First Responder)',
+        subtitle: 'Suspected cardiac arrest · Begin CPR coaching immediately',
+        confidence: 95,
+        units: [
+          { icon:'🚑', name:'Medic 8 (ALS)', eta:'4 min', status:'Available' },
+          { icon:'🚒', name:'Engine 3 (EMT)', eta:'3 min', status:'Available' },
+          { icon:'🏥', name:'SF General (notify)', eta:'—', status:'Alert sent' }
+        ],
+        reasons: [
+          'Keywords: "collapsed", "not breathing", "turning blue" (arrest indicators)',
+          'Age 62 + cardiac history → high-risk profile',
+          'Blood thinners → trauma protocol modifications needed',
+          'Nearest engine arrives 1 min before ALS → initiate CPR coaching',
+          'Similar cases (n=312) had avg 94% dual-response rate'
+        ]
+      },
+      alternatives: [
+        { title:'ALS Ambulance only', sub:'Single-unit response', pct:48, color:'text-amber-600' },
+        { title:'Add Helicopter EMS', sub:'If ground transport delayed', pct:12, color:'text-slate-500' },
+        { title:'Defer Fire Engine', sub:'Resource conservation', pct:8, color:'text-slate-500' }
+      ],
+      protocol: { title:'Protocol Checklist · Cardiac Arrest', done:3, total:6, items:[
+        { done:true, text:'Confirm patient unresponsive' },
+        { done:true, text:'Collect medical history' },
+        { done:true, text:'Dispatch ALS + first responder' },
+        { done:false, text:'Initiate telephone CPR coaching' },
+        { done:false, text:'Locate nearest AED' },
+        { done:false, text:'Pre-alert cardiac cath lab' }
+      ]},
+      resources: [
+        { name:'Medic 8 (ALS)', dist:'0.9 mi' },
+        { name:'Engine 3', dist:'0.6 mi' },
+        { name:'SF General (Cath Lab)', dist:'2.2 mi' },
+        { name:'Nearest AED (lobby)', dist:'0.05 mi' }
+      ]
+    },
+    {
+      id: 'INC-2026-04832',
+      severity: { label: 'MEDIUM · P2', cls: 'severity-medium' },
+      title: 'Residential Break-In in Progress',
+      ttRec: '1.5s',
+      caller: {
+        phone: '+1 (415) 555-0411', carrier: 'Mobile · Verified Carrier',
+        addr: '2190 Fillmore Street', city: 'San Francisco, CA · ±10m',
+        stress: 'High (81%)', stressColor: 'text-orange-600',
+        history: 'No prior incidents'
+      },
+      transcript: [
+        { t:'00:00:03', who:'Operator', text:"911, what's your emergency?" },
+        { t:'00:00:07', who:'Caller', text:`Someone is trying to <span class="bg-red-200 px-1 rounded">break into my house</span>. I'm hiding in the closet.` },
+        { t:'00:00:14', who:'Operator', text:"Stay quiet. Are they inside yet?" },
+        { t:'00:00:19', who:'Caller', text:`I hear <span class="bg-red-200 px-1 rounded">glass breaking</span> downstairs. I don't know if they have a weapon.` },
+        { t:'00:00:41', who:'Caller', text:`My kids are at school. I'm alone. Please hurry.` }
+      ],
+      reco: {
+        title: 'Dispatch Police (Silent Approach) + Backup',
+        subtitle: 'Home invasion in progress · Caller sheltering in place',
+        confidence: 91,
+        units: [
+          { icon:'🚓', name:'SFPD Unit 23', eta:'3 min', status:'Available' },
+          { icon:'🚓', name:'SFPD Unit 41 (Backup)', eta:'5 min', status:'Available' },
+          { icon:'🚁', name:'Aerial Unit (standby)', eta:'On request', status:'Standby' }
+        ],
+        reasons: [
+          'Keywords: "break into", "glass breaking", "hiding" (active threat)',
+          'Caller stress severe + silent response needed',
+          'Unknown weapon status → high-caution approach',
+          'No-sirens protocol to avoid alerting suspect',
+          'Similar cases (n=156) had avg 88% two-unit dispatch'
+        ]
+      },
+      alternatives: [
+        { title:'Single patrol car', sub:'Lower resource allocation', pct:31, color:'text-slate-500' },
+        { title:'Add K-9 Unit', sub:'If suspect flees on foot', pct:18, color:'text-slate-500' },
+        { title:'Sirens on approach', sub:'If suspect deterrence preferred', pct:11, color:'text-slate-500' }
+      ],
+      protocol: { title:'Protocol Checklist · Home Invasion', done:4, total:7, items:[
+        { done:true, text:'Confirm caller safety' },
+        { done:true, text:'Instruct to stay quiet and hidden' },
+        { done:true, text:'Gather suspect description if known' },
+        { done:true, text:'Dispatch silent approach' },
+        { done:false, text:'Maintain open line with caller' },
+        { done:false, text:'Coordinate unit arrival plan' },
+        { done:false, text:'Alert neighboring units' }
+      ]},
+      resources: [
+        { name:'SFPD Unit 23', dist:'0.7 mi' },
+        { name:'SFPD Unit 41', dist:'1.3 mi' },
+        { name:'Pacific Heights Station', dist:'1.0 mi' },
+        { name:'Aerial Unit Base', dist:'4.8 mi' }
+      ]
+    }
+  ];
+
+  const STATIC_QUEUE = [
+    { id:'04828', type:'MVA w/ Injury', pri:'P2', color:'orange' },
+    { id:'04827', type:'Medical · Chest Pain', pri:'P2', color:'yellow' },
+    { id:'04826', type:'Welfare Check', pri:'P3', color:'slate' }
+  ];
+
+  let currentIndex = 0;
+  let callSeconds = 0;
+  let timerInterval = null;
+  let stats = { accept:0, modify:0, reject:0, total:0 };
+
+  function renderIncident(idx) {
+    const inc = INCIDENTS[idx];
+
+    // Header
+    const sev = document.getElementById('severityBadge');
+    sev.className = `${inc.severity.cls} text-white px-3 py-1 rounded-md text-xs font-bold tracking-wider`;
+    sev.textContent = inc.severity.label;
+    document.getElementById('incidentTitle').textContent = `${inc.id} · ${inc.title}`;
+    document.getElementById('ttRec').textContent = inc.ttRec;
+
+    // Caller
+    document.getElementById('callerPhone').textContent = inc.caller.phone;
+    document.getElementById('callerCarrier').textContent = inc.caller.carrier;
+    document.getElementById('callerAddr').textContent = inc.caller.addr;
+    document.getElementById('callerCity').textContent = inc.caller.city;
+    const stressEl = document.getElementById('callerStress');
+    stressEl.textContent = inc.caller.stress;
+    stressEl.className = `font-medium ${inc.caller.stressColor}`;
+    document.getElementById('callerHistory').textContent = inc.caller.history;
+
+    // Transcript
+    const tr = document.getElementById('transcript');
+    tr.innerHTML = '';
+    inc.transcript.forEach((line, i) => {
+      setTimeout(() => {
+        const bg = line.who === 'Caller' ? 'bg-blue-50' : 'bg-slate-100';
+        const div = document.createElement('div');
+        div.className = 'transcript-line';
+        div.innerHTML = `<div class="text-xs text-slate-400 mb-0.5">${line.t} · ${line.who}</div><div class="${bg} rounded-lg px-3 py-2">${line.text}</div>`;
+        tr.appendChild(div);
+        tr.scrollTop = tr.scrollHeight;
+      }, i * 250);
+    });
+
+    // Recommendation
+    document.getElementById('recoTitle').textContent = inc.reco.title;
+    document.getElementById('recoSubtitle').textContent = inc.reco.subtitle;
+    document.getElementById('confPct').textContent = inc.reco.confidence + '%';
+    const circ = document.getElementById('confCircle');
+    const offset = 175.9 - (175.9 * inc.reco.confidence / 100);
+    circ.setAttribute('stroke-dashoffset', offset);
+
+    const units = document.getElementById('recoUnits');
+    units.innerHTML = inc.reco.units.map(u => `
+      <div class="flex items-center gap-2 text-sm bg-white rounded-md px-3 py-2 border border-slate-200">
+        <span>${u.icon}</span>
+        <span class="font-medium">${u.name}</span>
+        <span class="text-slate-400">·</span>
+        <span class="text-slate-600">ETA ${u.eta}</span>
+        <span class="ml-auto text-xs ${u.status==='Available'?'text-emerald-600':u.status==='Queued'?'text-amber-600':'text-slate-500'} font-medium">${u.status}</span>
+      </div>`).join('');
+
+    document.getElementById('recoReasons').innerHTML = inc.reco.reasons.map(r => `<li>${r}</li>`).join('');
+
+    // Alternatives
+    document.getElementById('alternatives').innerHTML = inc.alternatives.map(a => `
+      <div class="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 text-sm">
+        <div>
+          <div class="font-medium">${a.title}</div>
+          <div class="text-xs text-slate-500">${a.sub}</div>
+        </div>
+        <div class="text-sm font-semibold ${a.color}">${a.pct}%</div>
+      </div>`).join('');
+
+    // Protocol
+    document.getElementById('protocolTitle').textContent = inc.protocol.title;
+    document.getElementById('protocolProgress').textContent = `${inc.protocol.done} of ${inc.protocol.total} complete`;
+    document.getElementById('protocolList').innerHTML = inc.protocol.items.map(i => `
+      <div class="flex items-center gap-2">
+        <span class="${i.done?'text-emerald-600':'text-slate-300'}">${i.done?'✓':'○'}</span>
+        <span class="${i.done?'text-slate-500 line-through':''}">${i.text}</span>
+      </div>`).join('');
+
+    // Resources
+    document.getElementById('resourceList').innerHTML = inc.resources.map(r => `
+      <div class="flex justify-between"><span>${r.name}</span><span class="font-mono text-slate-600">${r.dist}</span></div>`).join('');
+
+    // Queue — include current + statics
+    const queueData = [
+      { id: inc.id.slice(-5), type: inc.title.split(' with ')[0].split(' · ')[0], pri: inc.severity.label.split('·')[1].trim(), color: inc.severity.label.includes('P1')?'red':inc.severity.label.includes('P2')?'orange':'slate' },
+      ...STATIC_QUEUE
+    ];
+    document.getElementById('queueList').innerHTML = queueData.map(q => {
+      const colorMap = { red:['red-50','red-600','red-700'], orange:['orange-50','orange-500','orange-700'], yellow:['yellow-50','yellow-500','yellow-700'], slate:['slate-50','slate-400','slate-700'] };
+      const c = colorMap[q.color];
+      return `<div class="flex items-center gap-2 px-2 py-2 bg-${c[0]} border-l-2 border-${c[1]} rounded">
+        <span class="font-mono">${q.id}</span>
+        <span class="flex-1">${q.type}</span>
+        <span class="text-${c[2]} font-semibold">${q.pri}</span>
+      </div>`;
+    }).join('');
+
+    // Reset timer
+    callSeconds = Math.floor(Math.random() * 30) + 15;
+    updateTimer();
+  }
+
+  function updateTimer() {
+    const m = String(Math.floor(callSeconds/60)).padStart(2,'0');
+    const s = String(callSeconds%60).padStart(2,'0');
+    const t = document.getElementById('callTimer');
+    if (t) t.textContent = `00:${m}:${s}`;
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => { callSeconds++; updateTimer(); }, 1000);
+  }
+
+  let pendingNextIdx = null;
+  let ringInterval = null;
+
+  function decide(action) {
+    stats[action]++;
+    stats.total++;
+    updateStats();
+    clearInterval(timerInterval);
+
+    const overlay = document.getElementById('callEndedOverlay');
+    const icon = document.getElementById('callEndedIcon');
+    const title = document.getElementById('callEndedTitle');
+    const detail = document.getElementById('callEndedDetail');
+
+    if (action === 'accept') {
+      icon.className = 'w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 text-2xl';
+      icon.textContent = '✓';
+      title.textContent = 'Recommendation Accepted';
+      detail.textContent = 'Units dispatched · Feedback logged for model training';
+    } else if (action === 'modify') {
+      icon.className = 'w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3 text-2xl';
+      icon.textContent = '✎';
+      title.textContent = 'Recommendation Modified';
+      detail.textContent = 'Custom dispatch sent · Modification reason logged for retraining';
+    } else {
+      icon.className = 'w-14 h-14 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3 text-2xl';
+      icon.textContent = '✕';
+      title.textContent = 'Recommendation Rejected';
+      detail.textContent = 'Alternative dispatch initiated · Override signal logged';
+    }
+
+    overlay.classList.remove('hidden');
+
+    // After a short delay, the next call starts "ringing" in the side toast
+    // (overlay stays open until user clicks OK)
+    setTimeout(() => {
+      showIncomingToast();
+    }, 3000);
+  }
+
+  function dismissResolvedOverlay() {
+    document.getElementById('callEndedOverlay').classList.add('hidden');
+  }
+
+  function showIncomingToast() {
+    if (pendingNextIdx !== null) return; // already ringing
+    const toast = document.getElementById('incomingToast');
+    pendingNextIdx = (currentIndex + 1) % INCIDENTS.length;
+    document.getElementById('incomingFrom').textContent = `From: ${INCIDENTS[pendingNextIdx].caller.phone}`;
+    toast.classList.remove('hidden');
+
+    let ringSecs = 0;
+    document.getElementById('ringSecs').textContent = ringSecs;
+    clearInterval(ringInterval);
+    ringInterval = setInterval(() => {
+      ringSecs++;
+      const el = document.getElementById('ringSecs');
+      if (el) el.textContent = ringSecs;
+    }, 1000);
+  }
+
+  function answerCall() {
+    if (pendingNextIdx === null) return;
+    clearInterval(ringInterval);
+    const toast = document.getElementById('incomingToast');
+    toast.classList.add('hidden');
+    document.getElementById('callEndedOverlay').classList.add('hidden');
+    currentIndex = pendingNextIdx;
+    pendingNextIdx = null;
+    renderIncident(currentIndex);
+    startTimer();
+  }
+
+  function dismissToast() {
+    // Keep the call pending — just hide the toast, user can click the "Ringing" indicator again
+    // For simplicity, we just show a smaller indicator; here we'll re-show it after 5s
+    const toast = document.getElementById('incomingToast');
+    toast.classList.add('hidden');
+    setTimeout(() => {
+      if (pendingNextIdx !== null) toast.classList.remove('hidden');
+    }, 5000);
+  }
+
+  function updateStats() {
+    const total = Math.max(stats.total, 1);
+    // Blend with shift baseline of 78/15/7 weighted
+    const baseN = 24;
+    const acc = Math.round(((stats.accept + baseN*0.78) / (stats.total + baseN)) * 100);
+    const mod = Math.round(((stats.modify + baseN*0.15) / (stats.total + baseN)) * 100);
+    const rej = Math.round(((stats.reject + baseN*0.07) / (stats.total + baseN)) * 100);
+    document.getElementById('acceptRate').textContent = acc + '%';
+    document.getElementById('modifyRate').textContent = mod + '%';
+    document.getElementById('rejectRate').textContent = rej + '%';
+    document.getElementById('callCount').textContent = stats.total;
+  }
+
+  // ============ VIEW SWITCHING ============
+  function switchView(name) {
+    ['operator','supervisor','organization'].forEach(v => {
+      document.getElementById('view-'+v).classList.add('hidden');
+      document.getElementById('tab-'+v).classList.remove('tab-active');
+      document.getElementById('tab-'+v).classList.add('hover:bg-slate-700');
+    });
+    document.getElementById('view-'+name).classList.remove('hidden');
+    document.getElementById('tab-'+name).classList.add('tab-active');
+    document.getElementById('tab-'+name).classList.remove('hover:bg-slate-700');
+    if (name === 'supervisor') initSupervisorCharts();
+    if (name === 'organization') initOrgChart();
+  }
+
+  let chartsInited = { sup:false, org:false };
+  function initSupervisorCharts() {
+    if (chartsInited.sup) return; chartsInited.sup = true;
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: { labels: Array.from({length:14},(_,i)=>`D-${13-i}`),
+        datasets: [
+          { label:'AI Assist', data:[52,49,48,46,47,45,44,43,44,42,41,42,40,42], borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.1)', tension:0.4, fill:true },
+          { label:'Baseline', data:[68,68,67,69,68,68,67,68,67,68,67,68,68,68], borderColor:'#94a3b8', borderDash:[4,4], tension:0.4 }
+        ]},
+      options: { responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ title:{display:true,text:'Seconds'} } } }
+    });
+    new Chart(document.getElementById('decisionChart'), {
+      type:'doughnut',
+      data: { labels:['Accept','Modify','Reject'], datasets:[{ data:[78,15,7], backgroundColor:['#10b981','#f59e0b','#ef4444'], borderWidth:0 }]},
+      options: { plugins:{ legend:{ position:'bottom' } } }
+    });
+    new Chart(document.getElementById('confidenceChart'), {
+      type:'bar',
+      data: { labels:['<50%','50-70%','70-85%','85-95%','>95%'],
+        datasets:[
+          { label:'Accepted', data:[12,38,71,89,96], backgroundColor:'#10b981' },
+          { label:'Overridden', data:[42,28,14,7,3], backgroundColor:'#ef4444' }
+        ]},
+      options: { plugins:{ legend:{ position:'bottom' } }, scales:{ y:{ title:{display:true,text:'%'} } } }
+    });
+  }
+  function initOrgChart() {
+    if (chartsInited.org) return; chartsInited.org = true;
+    new Chart(document.getElementById('orgChart'), {
+      type:'bar',
+      data:{ labels:['Jan','Feb','Mar','Apr (MTD)'],
+        datasets:[
+          { label:'Medical', data:[1820,1750,1910,720], backgroundColor:'#3b82f6' },
+          { label:'Fire', data:[640,590,710,290], backgroundColor:'#ef4444' },
+          { label:'MVA / Trauma', data:[820,790,870,310], backgroundColor:'#f97316' },
+          { label:'Other', data:[410,380,440,170], backgroundColor:'#94a3b8' }
+        ]},
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom' } }, scales:{ x:{ stacked:true }, y:{ stacked:true } } }
+    });
+  }
+
+  // ============ INIT ============
+  renderIncident(0);
+  callSeconds = 107;
+  startTimer();
+</script>
+</body>
+</html>
